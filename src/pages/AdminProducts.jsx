@@ -388,10 +388,10 @@ export default function AdminProducts() {
                     {form.tenureOptions.map((t, i) => (
                       <Row key={i} className="g-2 align-items-center" style={{ marginBottom: '8px' }}>
                         <Col xs={6}>
-                          <Form.Control size="sm" type="number" placeholder="e.g., 3" value={t.months} onChange={e => handleTenureChange(i, 'months', e.target.value)} style={inputStyle} />
+                          <Form.Control size="sm" type="number" placeholder="months" value={t.months} onChange={e => handleTenureChange(i, 'months', e.target.value)} style={inputStyle} />
                         </Col>
                         <Col xs={4}>
-                          <Form.Control size="sm" type="number" placeholder="e.g., 10" value={t.discountPercent} onChange={e => handleTenureChange(i, 'discountPercent', e.target.value)} style={inputStyle} />
+                          <Form.Control size="sm" type="number" placeholder="discount" value={t.discountPercent} onChange={e => handleTenureChange(i, 'discountPercent', e.target.value)} style={inputStyle} />
                         </Col>
                         <Col xs={2}>
                           {form.tenureOptions.length > 1 && <Button size="sm" variant="outline-danger" onClick={() => removeTenureRow(i)} style={{ padding: '4px 8px', border: `1px solid ${theme.colors.error}`, color: theme.colors.error, borderRadius: theme.radius.sm, width: '100%' }}>✕</Button>}

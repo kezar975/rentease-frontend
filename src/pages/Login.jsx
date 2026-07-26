@@ -270,7 +270,7 @@ export default function Login() {
 
               <div style={{ textAlign: 'center', marginBottom: '24px' }}>
                 <Link
-                  to="/forgot-password"
+                  to="/forgotpassword"
                   style={{
                     color: theme.colors.accent,
                     fontSize: '0.9rem',

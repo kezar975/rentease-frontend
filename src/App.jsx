@@ -17,6 +17,7 @@ import AdminRentals from './pages/AdminRentals';
 import AdminMaintenance from './pages/AdminMaintenance';
 import AdminUsers from './pages/AdminUsers'; 
 import './App.css';
+import ForgotPassword from './pages/ForgotPassword';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const token = localStorage.getItem('token');
@@ -42,6 +43,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/products" element={<BrowseProducts />} />
               <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path='/forgotpassword' element={<ForgotPassword />}/>
               <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
               <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
               <Route path="/my-rentals" element={<ProtectedRoute><MyRentals /></ProtectedRoute>} />
