@@ -24,7 +24,7 @@ const theme = {
 
 function StyledNavLink({ to, onClick, children, isActive }) {
   const [hovered, setHovered] = useState(false);
-  
+
   const baseStyle = {
     color: hovered ? theme.colors.primary : (isActive ? theme.colors.primary : theme.colors.text),
     fontWeight: '500',
@@ -38,9 +38,9 @@ function StyledNavLink({ to, onClick, children, isActive }) {
   };
 
   return (
-    <Nav.Link 
-      as={to ? Link : 'button'} 
-      to={to} 
+    <Nav.Link
+      as={to ? Link : 'button'}
+      to={to}
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -66,15 +66,15 @@ export default function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [btnHover, setBtnHover] = useState(false);
-  
+
   const cartCount = (() => {
     try {
       const currentUser = user || JSON.parse(localStorage.getItem('user') || '{}');
-      
-      const cartKey = currentUser?._id || currentUser?.email 
-        ? `cart_${currentUser._id || currentUser.email}` 
+
+      const cartKey = currentUser?._id || currentUser?.email
+        ? `cart_${currentUser._id || currentUser.email}`
         : 'cart_guest';
-      
+
       const cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
       return Array.isArray(cart) ? cart.length : 0;
     } catch {
@@ -88,10 +88,10 @@ export default function Navbar() {
   };
 
   return (
-    <BSNavbar 
-      expand="lg" 
-      style={{ 
-        backgroundColor: theme.colors.bg, 
+    <BSNavbar
+      expand="lg"
+      style={{
+        backgroundColor: theme.colors.bg,
         borderBottom: `1px solid ${theme.colors.border}`,
         boxShadow: theme.shadows.navbar,
         padding: '12px 0',
@@ -100,25 +100,25 @@ export default function Navbar() {
         zIndex: 1000
       }}
     >
-      <div style={{ 
-        width: '100%', 
-        maxWidth: '1200px', 
-        margin: '0 auto', 
+      <div style={{
+        width: '100%',
+        maxWidth: '1200px',
+        margin: '0 auto',
         padding: '0 15px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between'
       }}>
-        
-        <BSNavbar.Brand 
-          as={Link} 
-          to="/" 
-          style={{ 
-            fontFamily: "'Playfair Display', Georgia, serif", 
-            fontWeight: '700', 
-            fontSize: '1.6rem', 
-            color: theme.colors.primary, 
-            textDecoration: 'none', 
+
+        <BSNavbar.Brand
+          as={Link}
+          to="/"
+          style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontWeight: '700',
+            fontSize: '1.6rem',
+            color: theme.colors.primary,
+            textDecoration: 'none',
             letterSpacing: '0.5px',
             display: 'flex',
             alignItems: 'center',
@@ -128,14 +128,14 @@ export default function Navbar() {
         >
           🪑 RentEase
         </BSNavbar.Brand>
-        
-        <BSNavbar.Toggle 
-          aria-controls="basic-navbar-nav" 
-          style={{ borderColor: theme.colors.border, color: theme.colors.primary }} 
+
+        <BSNavbar.Toggle
+          aria-controls="basic-navbar-nav"
+          style={{ borderColor: theme.colors.border, color: theme.colors.primary }}
         />
-        
+
         <BSNavbar.Collapse id="basic-navbar-nav">
-          <Nav style={{ 
+          <Nav style={{
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
@@ -143,22 +143,24 @@ export default function Navbar() {
             marginRight: 'auto'
           }}>
             <StyledNavLink to="/products">Browse Catalog</StyledNavLink>
-            
+
             {user ? (
               <>
                 <StyledNavLink to="/my-rentals">My Rentals</StyledNavLink>
-                
+
                 {user.role === 'admin' && (
                   <StyledNavLink to="/admin">Admin</StyledNavLink>
                 )}
-                
-                {/* Cart with Dynamic Count */}
-                <Nav.Link 
-                  as={Link} 
-                  to="/cart" 
-                  style={{ 
-                    position: 'relative', 
-                    padding: '8px 12px', 
+                {user.role === 'vendor' && (
+                  <StyledNavLink to="/vendor">Vendor Dashboard</StyledNavLink>
+                )}
+
+                <Nav.Link
+                  as={Link}
+                  to="/cart"
+                  style={{
+                    position: 'relative',
+                    padding: '8px 12px',
                     fontSize: '1.2rem',
                     textDecoration: 'none',
                     color: theme.colors.text,
@@ -195,8 +197,8 @@ export default function Navbar() {
             ) : (
               <>
                 <StyledNavLink to="/login">Login</StyledNavLink>
-                
-                <Link 
+
+                <Link
                   to="/register"
                   onMouseEnter={() => setBtnHover(true)}
                   onMouseLeave={() => setBtnHover(false)}
