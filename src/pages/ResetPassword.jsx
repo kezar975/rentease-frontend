@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
 
@@ -48,32 +48,44 @@ const labelStyle = {
   letterSpacing: '0.3px'
 };
 
-export default function ForgotPassword() {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [touched, setTouched] = useState(false);
+export default function ResetPassword() {
+  const { token } = useParams();
+  const navigate = useNavigate();
+
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [msg, setMsg] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [btnHover, setBtnHover] = useState(false);
 
-  const emailError = touched && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-    ? 'Enter a valid email address'
-    : '';
+  const validate = (data) => {
+    const newErrors = {};
+    if (!data.password) newErrors.password = 'Password is required';
+    else if (data.password.length < 6) newErrors.password = 'Min 6 characters';
+    if (data.password !== data.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
+    return newErrors;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMsg('');
     setError('');
-    setTouched(true);
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+    const newErrors = validate({ password, confirmPassword });
+    setErrors(newErrors);
+    setTouched({ password: true, confirmPassword: true });
+    if (Object.keys(newErrors).length > 0) return;
 
     setLoading(true);
     try {
-      const res = await api.post('/auth/forgot-password', { email });
-      setMsg(res.data.message || 'If that email exists, a reset link has been sent.');
+      const res = await api.post(`/auth/reset-password/${token}`, { password });
+      setMsg(res.data.message || 'Password reset successful! Redirecting to login...');
+      setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to send reset link. Please try again.');
+      setError(err.response?.data?.message || 'Failed to reset password. The link may have expired.');
     } finally {
       setLoading(false);
     }
@@ -97,6 +109,7 @@ export default function ForgotPassword() {
         backgroundColor: theme.colors.cardBg,
         overflow: 'hidden'
       }}>
+
         <div style={{ height: '4px', backgroundColor: theme.colors.primary }} />
 
         <Card.Body style={{ padding: '40px' }}>
@@ -108,7 +121,7 @@ export default function ForgotPassword() {
             marginBottom: '12px',
             textAlign: 'center'
           }}>
-            Forgot Password
+            Set New Password
           </h4>
           <p style={{
             color: theme.colors.textMuted,
@@ -117,7 +130,7 @@ export default function ForgotPassword() {
             marginBottom: '32px',
             lineHeight: '1.5'
           }}>
-            Enter your account email and we'll send you a link to reset your password.
+            Enter a new password for your RentEase account.
           </p>
 
           {msg && (
@@ -151,19 +164,37 @@ export default function ForgotPassword() {
           {!msg && (
             <Form onSubmit={handleSubmit} noValidate>
               <Form.Group className="mb-4">
-                <Form.Label style={labelStyle}>Email Address</Form.Label>
+                <Form.Label style={labelStyle}>New Password</Form.Label>
                 <Form.Control
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onBlur={() => setTouched(true)}
-                  isInvalid={touched && !!emailError}
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onBlur={() => setTouched(prev => ({ ...prev, password: true }))}
+                  isInvalid={touched.password && !!errors.password}
                   style={inputStyle}
                 />
-                {emailError && (
+                {touched.password && errors.password && (
                   <div style={{ fontSize: '0.8rem', color: theme.colors.error, marginTop: '6px' }}>
-                    {emailError}
+                    {errors.password}
+                  </div>
+                )}
+              </Form.Group>
+
+              <Form.Group className="mb-4">
+                <Form.Label style={labelStyle}>Confirm New Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onBlur={() => setTouched(prev => ({ ...prev, confirmPassword: true }))}
+                  isInvalid={touched.confirmPassword && !!errors.confirmPassword}
+                  style={inputStyle}
+                />
+                {touched.confirmPassword && errors.confirmPassword && (
+                  <div style={{ fontSize: '0.8rem', color: theme.colors.error, marginTop: '6px' }}>
+                    {errors.confirmPassword}
                   </div>
                 )}
               </Form.Group>
@@ -189,7 +220,7 @@ export default function ForgotPassword() {
                   cursor: loading ? 'not-allowed' : 'pointer'
                 }}
               >
-                {loading ? 'Sending...' : 'Send Reset Link'}
+                {loading ? 'Resetting...' : 'Reset Password'}
               </Button>
             </Form>
           )}

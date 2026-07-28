@@ -23,7 +23,7 @@ import VendorRentals from './pages/VendorRentals';
 import VendorMaintenance from './pages/VendorMaintenance';
 import './App.css';
 import ForgotPassword from './pages/ForgotPassword';
-
+import ResetPassword from './pages/ResetPassword';
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -52,6 +52,7 @@ function App() {
               <Route path="/cart" element={<ProtectedRoute allowedRoles={['user', 'vendor', 'admin']}><Cart /></ProtectedRoute>} />
               <Route path="/checkout" element={<ProtectedRoute allowedRoles={['user', 'vendor', 'admin']}><Checkout /></ProtectedRoute>} />
               <Route path="/my-rentals" element={<ProtectedRoute allowedRoles={['user', 'vendor', 'admin']}><MyRentals /></ProtectedRoute>} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
 
               <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AdminLayout /></ProtectedRoute>}>
                 <Route index element={<AdminDashboard />} />
