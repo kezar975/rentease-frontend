@@ -86,8 +86,11 @@ export default function Login() {
 
     setLoading(true);
     try {
-      await login(email, password);
-      navigate('/products');
+      const loggedInUser = await login(email, password);
+
+      if (loggedInUser.role === 'admin') navigate('/admin');
+      else if (loggedInUser.role === 'vendor') navigate('/vendor');
+      else navigate('/products');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
