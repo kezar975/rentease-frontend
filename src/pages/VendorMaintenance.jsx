@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Table, Badge, Spinner, Alert } from 'react-bootstrap';
-import api from '../api/api';
+import api from '../services/api';
 
 const theme = {
   colors: { primary: '#5D4037', bg: '#FAF9F6', cardBg: '#FFFFFF', textMuted: '#8D7B6F', border: '#D7CCC8' },
