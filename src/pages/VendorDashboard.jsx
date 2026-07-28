@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Card, Spinner } from 'react-bootstrap';
-import api from '../api/api'; // apne actual path se adjust kar lena
+import api from '../services/api'; 
 
 const theme = {
   colors: {
