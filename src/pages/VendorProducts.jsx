@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Badge, Spinner, Alert } from 'react-bootstrap';
-import api from '../api/api';
+import api from '../services/api';
 
 const theme = {
   colors: {
