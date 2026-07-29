@@ -18,7 +18,9 @@ const theme = {
     error: '#C62828',
     errorBg: '#FFEBEE',
     warning: '#F57F17',
-    warningBg: '#FFF8E1'
+    warningBg: '#FFF8E1',
+    info: '#1565C0',      
+    infoBg: '#E3F2FD'      
   },
   shadows: {
     soft: '0 4px 12px rgba(93, 64, 55, 0.06)',
@@ -41,6 +43,11 @@ const inputStyle = {
   boxShadow: 'none',
   outline: 'none',
   cursor: 'pointer'
+};
+const getRoleBadgeStyle = (role) => {
+  if (role === 'admin') return { backgroundColor: theme.colors.warningBg, color: theme.colors.warning, label: 'Admin' };
+  if (role === 'vendor') return { backgroundColor: theme.colors.infoBg, color: theme.colors.info, label: 'Vendor' };
+  return { backgroundColor: theme.colors.successBg, color: theme.colors.success, label: 'Customer' };
 };
 
 export default function AdminUsers() {
@@ -101,7 +108,7 @@ export default function AdminUsers() {
 
   const openRoleModal = (user) => {
     setSelectedUser(user);
-    setNewRole(user.role);
+    setNewRole(user.role || 'user');
     setShowModal(true);
   };
 
@@ -127,7 +134,7 @@ export default function AdminUsers() {
             User Management
           </h3>
           <p style={{ color: theme.colors.textMuted, fontSize: '0.95rem', marginTop: '8px', marginBottom: 0 }}>
-            Manage registered users and their roles.
+            Manage registered users, vendors, and admins.
           </p>
         </div>
 
@@ -153,26 +160,45 @@ export default function AdminUsers() {
           flexWrap: 'wrap',
           gap: '16px'
         }}>
-          <div style={{ display: 'flex', gap: '16px' }}>
-            <div style={{ 
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+\            <div style={{ 
               backgroundColor: theme.colors.cardBg, 
               padding: '16px 24px', 
               borderRadius: theme.radius.md,
               border: `1px solid ${theme.colors.border}`,
-              boxShadow: theme.shadows.soft
+              boxShadow: theme.shadows.soft,
+              minWidth: '140px'
             }}>
               <div style={{ fontSize: '0.85rem', color: theme.colors.textMuted, marginBottom: '4px' }}>Total Users</div>
               <div style={{ fontSize: '1.8rem', fontWeight: '700', color: theme.colors.primary }}>{users.length}</div>
             </div>
+            
             <div style={{ 
               backgroundColor: theme.colors.cardBg, 
               padding: '16px 24px', 
               borderRadius: theme.radius.md,
               border: `1px solid ${theme.colors.border}`,
-              boxShadow: theme.shadows.soft
+              boxShadow: theme.shadows.soft,
+              minWidth: '140px'
             }}>
               <div style={{ fontSize: '0.85rem', color: theme.colors.textMuted, marginBottom: '4px' }}>Admins</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: '700', color: theme.colors.success }}>{users.filter(u => u.role === 'admin').length}</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: '700', color: theme.colors.warning }}>
+                {users.filter(u => u.role === 'admin').length}
+              </div>
+            </div>
+
+            <div style={{ 
+              backgroundColor: theme.colors.cardBg, 
+              padding: '16px 24px', 
+              borderRadius: theme.radius.md,
+              border: `1px solid ${theme.colors.border}`,
+              boxShadow: theme.shadows.soft,
+              minWidth: '140px'
+            }}>
+              <div style={{ fontSize: '0.85rem', color: theme.colors.textMuted, marginBottom: '4px' }}>Vendors</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: '700', color: theme.colors.info }}>
+                {users.filter(u => u.role === 'vendor').length}
+              </div>
             </div>
           </div>
 
@@ -183,6 +209,7 @@ export default function AdminUsers() {
           >
             <option value="All">All Users</option>
             <option value="user">Customers</option>
+            <option value="vendor">Vendors</option>
             <option value="admin">Admins</option>
           </Form.Select>
         </div>
@@ -237,121 +264,96 @@ export default function AdminUsers() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map(u => (
-                    <tr 
-                      key={u._id}
-                      onMouseEnter={() => setHoveredRow(u._id)}
-                      onMouseLeave={() => setHoveredRow(null)}
-                      style={{ 
-                        backgroundColor: hoveredRow === u._id ? '#FAF9F6' : 'transparent',
-                        transition: 'background-color 0.2s ease'
-                      }}
-                    >
-                      <td style={{ 
-                        padding: '16px 20px', 
-                        borderBottom: `1px solid ${theme.colors.border}`, 
-                        color: theme.colors.text, 
-                        fontWeight: '500' 
-                      }}>
-                        {u.name || 'N/A'}
-                      </td>
-                      <td style={{ 
-                        padding: '16px 20px', 
-                        borderBottom: `1px solid ${theme.colors.border}`, 
-                        color: theme.colors.text 
-                      }}>
-                        {u.email || 'N/A'}
-                      </td>
-                      <td style={{ 
-                        padding: '16px 20px', 
-                        borderBottom: `1px solid ${theme.colors.border}`, 
-                        color: theme.colors.textMuted,
-                        fontSize: '0.9rem'
-                      }}>
-                        {u.phone || '—'}
-                      </td>
-                      <td style={{ padding: '16px 20px', borderBottom: `1px solid ${theme.colors.border}` }}>
-                        <span style={{
-                          display: 'inline-block',
-                          padding: '6px 14px',
-                          borderRadius: '20px',
-                          fontSize: '0.8rem',
-                          fontWeight: '600',
-                          letterSpacing: '0.3px',
-                          backgroundColor: u.role === 'admin' ? theme.colors.warningBg : theme.colors.successBg,
-                          color: u.role === 'admin' ? theme.colors.warning : theme.colors.success
-                        }}>
-                          {u.role === 'admin' ? 'Admin' : 'Customer'}
-                        </span>
-                      </td>
-                      <td style={{ 
-                        padding: '16px 20px', 
-                        borderBottom: `1px solid ${theme.colors.border}`, 
-                        color: theme.colors.textMuted,
-                        fontSize: '0.9rem',
-                        whiteSpace: 'nowrap'
-                      }}>
-                        {u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN') : 'N/A'}
-                      </td>
-                      <td style={{ 
-                        padding: '16px 20px', 
-                        borderBottom: `1px solid ${theme.colors.border}`,
-                        textAlign: 'center'
-                      }}>
-                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                          <Button 
-                            size="sm"
-                            onMouseEnter={() => handleBtnHover(`role-${u._id}`, true)}
-                            onMouseLeave={() => handleBtnHover(`role-${u._id}`, false)}
-                            onClick={() => openRoleModal(u)}
-                            style={{
-                              backgroundColor: btnHovers[`role-${u._id}`] ? theme.colors.accent : 'transparent',
-                              color: btnHovers[`role-${u._id}`] ? '#FFFFFF' : theme.colors.accent,
-                              border: `1.5px solid ${theme.colors.accent}`,
-                              borderRadius: theme.radius.sm,
-                              padding: '6px 14px',
-                              fontWeight: '600',
-                              fontSize: '0.8rem',
-                              transition: 'all 0.2s ease',
-                              boxShadow: 'none',
-                              cursor: 'pointer'
-                            }}
-                          >
-                            Change Role
-                          </Button>
-                          <Button 
-                            size="sm"
-                            onMouseEnter={() => handleBtnHover(`del-${u._id}`, true)}
-                            onMouseLeave={() => handleBtnHover(`del-${u._id}`, false)}
-                            onClick={() => handleDeleteUser(u._id, u.name)}
-                            disabled={actionLoadingId === u._id}
-                            style={{
-                              backgroundColor: btnHovers[`del-${u._id}`] ? theme.colors.error : 'transparent',
-                              color: btnHovers[`del-${u._id}`] ? '#FFFFFF' : theme.colors.error,
-                              border: `1.5px solid ${theme.colors.error}`,
-                              borderRadius: theme.radius.sm,
-                              padding: '6px 14px',
-                              fontWeight: '600',
-                              fontSize: '0.8rem',
-                              transition: 'all 0.2s ease',
-                              boxShadow: 'none',
-                              cursor: actionLoadingId === u._id ? 'not-allowed' : 'pointer',
-                              opacity: actionLoadingId === u._id ? 0.6 : 1
-                            }}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {filteredUsers.map(u => {
+                    const badge = getRoleBadgeStyle(u.role);
+                    return (
+                      <tr 
+                        key={u._id}
+                        onMouseEnter={() => setHoveredRow(u._id)}
+                        onMouseLeave={() => setHoveredRow(null)}
+                        style={{ 
+                          backgroundColor: hoveredRow === u._id ? '#FAF9F6' : 'transparent',
+                          transition: 'background-color 0.2s ease'
+                        }}
+                      >
+                        <td style={{ padding: '16px 20px', borderBottom: `1px solid ${theme.colors.border}`, color: theme.colors.text, fontWeight: '500' }}>
+                          {u.name || 'N/A'}
+                        </td>
+                        <td style={{ padding: '16px 20px', borderBottom: `1px solid ${theme.colors.border}`, color: theme.colors.text }}>
+                          {u.email || 'N/A'}
+                        </td>
+                        <td style={{ padding: '16px 20px', borderBottom: `1px solid ${theme.colors.border}`, color: theme.colors.textMuted, fontSize: '0.9rem' }}>
+                          {u.phone || '—'}
+                        </td>
+                        <td style={{ padding: '16px 20px', borderBottom: `1px solid ${theme.colors.border}` }}>
+                          <span style={{
+                            display: 'inline-block',
+                            padding: '6px 14px',
+                            borderRadius: '20px',
+                            fontSize: '0.8rem',
+                            fontWeight: '600',
+                            letterSpacing: '0.3px',
+                            backgroundColor: badge.backgroundColor,
+                            color: badge.color
+                          }}>
+                            {badge.label}
+                          </span>
+                        </td>
+                        <td style={{ padding: '16px 20px', borderBottom: `1px solid ${theme.colors.border}`, color: theme.colors.textMuted, fontSize: '0.9rem', whiteSpace: 'nowrap' }}>
+                          {u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN') : 'N/A'}
+                        </td>
+                        <td style={{ padding: '16px 20px', borderBottom: `1px solid ${theme.colors.border}`, textAlign: 'center' }}>
+                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                            <Button 
+                              size="sm"
+                              onMouseEnter={() => handleBtnHover(`role-${u._id}`, true)}
+                              onMouseLeave={() => handleBtnHover(`role-${u._id}`, false)}
+                              onClick={() => openRoleModal(u)}
+                              style={{
+                                backgroundColor: btnHovers[`role-${u._id}`] ? theme.colors.accent : 'transparent',
+                                color: btnHovers[`role-${u._id}`] ? '#FFFFFF' : theme.colors.accent,
+                                border: `1.5px solid ${theme.colors.accent}`,
+                                borderRadius: theme.radius.sm,
+                                padding: '6px 14px',
+                                fontWeight: '600',
+                                fontSize: '0.8rem',
+                                transition: 'all 0.2s ease',
+                                boxShadow: 'none',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              Change Role
+                            </Button>
+                            <Button 
+                              size="sm"
+                              onMouseEnter={() => handleBtnHover(`del-${u._id}`, true)}
+                              onMouseLeave={() => handleBtnHover(`del-${u._id}`, false)}
+                              onClick={() => handleDeleteUser(u._id, u.name)}
+                              disabled={actionLoadingId === u._id}
+                              style={{
+                                backgroundColor: btnHovers[`del-${u._id}`] ? theme.colors.error : 'transparent',
+                                color: btnHovers[`del-${u._id}`] ? '#FFFFFF' : theme.colors.error,
+                                border: `1.5px solid ${theme.colors.error}`,
+                                borderRadius: theme.radius.sm,
+                                padding: '6px 14px',
+                                fontWeight: '600',
+                                fontSize: '0.8rem',
+                                transition: 'all 0.2s ease',
+                                boxShadow: 'none',
+                                cursor: actionLoadingId === u._id ? 'not-allowed' : 'pointer',
+                                opacity: actionLoadingId === u._id ? 0.6 : 1
+                              }}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                   {filteredUsers.length === 0 && (
                     <tr>
-                      <td colSpan={6} style={{ 
-                        padding: '60px 20px', 
-                        textAlign: 'center', 
-                        color: theme.colors.textMuted 
-                      }}>
+                      <td colSpan={6} style={{ padding: '60px 20px', textAlign: 'center', color: theme.colors.textMuted }}>
                         <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>👥</div>
                         <p style={{ margin: 0, fontSize: '0.95rem' }}>No users found</p>
                       </td>
@@ -363,7 +365,7 @@ export default function AdminUsers() {
           </div>
         )}
 
-        <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+\        <Modal show={showModal} onHide={() => setShowModal(false)} centered>
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
             backgroundColor: 'rgba(44, 36, 32, 0.6)', backdropFilter: 'blur(4px)',
@@ -377,12 +379,7 @@ export default function AdminUsers() {
               width: '100%', maxWidth: '400px', margin: '20px', overflow: 'hidden'
             }}>
               <Modal.Header closeButton style={{ borderBottom: `1px solid ${theme.colors.border}`, padding: '20px 24px' }}>
-                <Modal.Title style={{ 
-                  color: theme.colors.primary, 
-                  fontFamily: "'Playfair Display', Georgia, serif", 
-                  fontWeight: '700', 
-                  fontSize: '1.2rem' 
-                }}>
+                <Modal.Title style={{ color: theme.colors.primary, fontFamily: "'Playfair Display', Georgia, serif", fontWeight: '700', fontSize: '1.2rem' }}>
                   Change User Role
                 </Modal.Title>
               </Modal.Header>
@@ -407,6 +404,7 @@ export default function AdminUsers() {
                         style={{ ...inputStyle }}
                       >
                         <option value="user">Customer</option>
+                        <option value="vendor">Vendor</option> {/* ✅ NEW: Vendor Option */}
                         <option value="admin">Admin</option>
                       </Form.Select>
                     </Form.Group>
