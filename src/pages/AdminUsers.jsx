@@ -161,7 +161,7 @@ export default function AdminUsers() {
           gap: '16px'
         }}>
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-\            <div style={{ 
+           <div style={{ 
               backgroundColor: theme.colors.cardBg, 
               padding: '16px 24px', 
               borderRadius: theme.radius.md,
